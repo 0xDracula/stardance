@@ -20,6 +20,7 @@
   viewer_follow = @viewer_follow
   total_hours = @total_hours || (@project.duration_seconds / 3600.0).round
   can_edit_project = @can_edit_project
+  can_delete_project = policy(@project).destroy?
   # Only highlight the unfinished sections when the user arrived via the
   # "Complete project info" button (which adds ?complete=1).
   highlight_incomplete_fields = (can_edit_project && params[:complete].present?) ? @project.incomplete_info_fields : []
@@ -433,6 +434,14 @@
                   <%= link_to "Edit project", project_path(@project, editing: true),
                               class: "project-show__pill project-show__pill--outline",
                               data: { turbo_frame: "project_hero" } %>
+                <% end %>
+
+                <% if can_delete_project %>
+                  <%= button_to "Delete project", project_path(@project),
+                                method: :delete,
+                                form_class: "project-show__pill-form",
+                                class: "project-show__pill project-show__pill--following",
+                                data: { confirm: "Are you sure you want to delete this project? This action cannot be undone." } %>
                 <% end %>
 
                 <% if current_user && !is_member %>
